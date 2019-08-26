@@ -1,35 +1,25 @@
-import sys
 import numpy as np
-from scipy import ndimage
-import Image
+import matplotlib.pyplot as plt
 
-roberts_cross_v = np.array( [[ 0, 0, 0 ],
-                             [ 0, 1, 0 ],
-                             [ 0, 0,-1 ]] )
+from skimage.data import camera
+from skimage.filters import roberts, sobel, sobel_h, sobel_v, scharr, \
+    scharr_h, scharr_v, prewitt, prewitt_v, prewitt_h, farid_v, farid_h
 
-roberts_cross_h = np.array( [[ 0, 0, 0 ],
-                             [ 0, 0, 1 ],
-                             [ 0,-1, 0 ]] )
-def load_image( infilename ) :
-    img = Image.open( infilename )
-    img.load() 
-    # note signed integer
-    return np.asarray( img, dtype="int32" )
+image = camera()
+edge_roberts = roberts(image)
+edge_sobel = sobel(image)
 
-def save_image( data, outfilename ) :
-    img = Image.fromarray( np.asarray( np.clip(data,0,255), dtype="uint8"), "L" )
-    img.save( outfilename )
+fig, ax = plt.subplots(ncols=2, sharex=True, sharey=True,
+                       figsize=(8, 4))
 
-def roberts_cross( infilename, outfilename ) :
-    image = load_image( infilename )
+ax[0].imshow(edge_roberts, cmap=plt.cm.gray)
+ax[0].set_title('Roberts Edge Detection')
 
-    vertical = ndimage.convolve( image, roberts_cross_v )
-    horizontal = ndimage.convolve( image, roberts_cross_h )
+ax[1].imshow(edge_sobel, cmap=plt.cm.gray)
+ax[1].set_title('Sobel Edge Detection')
 
-    output_image = np.sqrt( np.square(horizontal) + np.square(vertical))
+for a in ax:
+    a.axis('off')
 
-    save_image( output_image, outfilename )
-
-infilename = sys.argv[1]
-outfilename = sys.argv[2]
-roberts_cross( infilename, outfilename )
+plt.tight_layout()
+plt.show()
