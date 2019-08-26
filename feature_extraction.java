@@ -2,7 +2,6 @@ package humain;
 
 import java.util.Scanner;
 
-
 public class Main
 {
     
